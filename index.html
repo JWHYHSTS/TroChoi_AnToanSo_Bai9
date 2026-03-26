@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🛡️ An Toàn Số Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800;900&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #070B14;
+  --card: #111827;
+  --card2: #1a2235;
+  --primary: #7C3AED;
+  --primary2: #A855F7;
+  --gold: #F59E0B;
+  --gold2: #FCD34D;
+  --green: #10B981;
+  --red: #EF4444;
+  --blue: #3B82F6;
+  --text: #F1F5F9;
+  --text2: #94A3B8;
+  --border: rgba(255,255,255,0.08);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  color: var(--text);
+  overflow-x: hidden;
+}
+.bg-wrap {
+  position: fixed; inset:0; z-index:0; overflow:hidden;
+  background: radial-gradient(ellipse at 20% 20%, #1e0a3c 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 80%, #0a1a3c 0%, transparent 50%),
+              var(--bg);
+}
+.grid-lines {
+  position: absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(124,58,237,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,58,237,0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+.scan-line {
+  position: absolute; left:0; right:0; height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(124,58,237,0.3), transparent);
+  animation: scan 7s linear infinite;
+}
+@keyframes scan { 0%{top:-2px} 100%{top:100%} }
+
+.wrap {
+  position: relative; z-index:1;
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 16px;
+}
+.screen { display:none; width:100%; max-width:720px; }
+.screen.active {
+  display:flex; flex-direction:column; gap:14px;
+  animation: fadeUp 0.4s ease;
+}
+@keyframes fadeUp {
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* ── START ── */
+.start-hero {
+  background: linear-gradient(160deg, #160830, #0d1f3c);
+  border: 1px solid rgba(124,58,237,0.25);
+  border-radius: 28px; padding: 48px 32px;
+  text-align: center;
+  box-shadow: 0 0 80px rgba(124,58,237,0.12), inset 0 1px 0 rgba(255,255,255,0.05);
+  position: relative; overflow: hidden;
+}
+.start-hero::before {
+  content:''; position:absolute; inset:0;
+  background: conic-gradient(from 0deg at 50% 50%, transparent 0%, rgba(124,58,237,0.04) 25%, transparent 50%);
+  animation: spin-bg 15s linear infinite;
+}
+@keyframes spin-bg { to{transform:rotate(360deg)} }
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(124,58,237,0.18); border: 1px solid rgba(168,85,247,0.35);
+  border-radius: 50px; padding: 6px 18px;
+  font-size: 0.78rem; font-weight: 700; color: #C084FC;
+  letter-spacing: 2px; text-transform: uppercase; margin-bottom: 28px;
+}
+.hero-badge .dot {
+  width:7px; height:7px; background:#C084FC; border-radius:50%;
+  animation: pdot 1.5s ease-in-out infinite;
+  box-shadow: 0 0 8px #C084FC;
+}
+@keyframes pdot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(0.5)} }
+
+.hero-icon {
+  font-size: 80px; display:block; margin-bottom: 22px;
+  animation: float-i 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 24px rgba(245,158,11,0.7));
+}
+@keyframes float-i {
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-14px) scale(1.05)}
+}
+.hero-title {
+  font-family: 'Baloo 2', cursive; font-size: clamp(2.2rem,6vw,3.4rem); font-weight: 900;
+  line-height:1.1; margin-bottom: 14px;
+  background: linear-gradient(135deg, #FCD34D 0%, #F59E0B 40%, #A855F7 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.hero-sub {
+  font-size: 1rem; color: var(--text2); line-height: 1.75;
+  max-width: 440px; margin: 0 auto 32px;
+}
+.info-pills {
+  display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 36px;
+}
+.pill {
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px; padding: 10px 20px;
+  font-size: 0.9rem; font-weight: 600;
+  display: flex; align-items: center; gap: 8px;
+}
+.pill strong { color: var(--gold2); font-family: 'Baloo 2',cursive; font-size: 1.15rem; font-weight: 900; }
+.btn-play {
+  font-family: 'Baloo 2', cursive; font-size: 1.25rem; font-weight: 900;
+  padding: 17px 60px; border: none; border-radius: 18px;
+  background: linear-gradient(135deg, #7C3AED, #A855F7);
+  color: white; cursor: pointer; position: relative; overflow: hidden;
+  box-shadow: 0 8px 36px rgba(124,58,237,0.55);
+  transition: all 0.3s;
+}
+.btn-play::after {
+  content:''; position:absolute; inset:0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.18), transparent);
+}
+.btn-play:hover { transform:translateY(-4px); box-shadow:0 16px 48px rgba(124,58,237,0.7); }
+
+/* ── QUIZ TOPBAR ── */
+.quiz-topbar {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 20px; padding: 16px 20px;
+  display: flex; align-items: center; gap: 16px;
+}
+.progress-section { flex:1; }
+.prog-meta {
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom: 10px;
+}
+.q-counter { font-size: 0.82rem; font-weight: 700; color: var(--text2); }
+.score-live {
+  font-family: 'Baloo 2',cursive; font-size: 1.05rem; font-weight: 800;
+  color: var(--gold2);
+}
+.prog-track {
+  height: 10px; background: rgba(255,255,255,0.06);
+  border-radius: 10px; overflow: hidden;
+}
+.prog-bar {
+  height:100%; border-radius:10px;
+  background: linear-gradient(90deg, #7C3AED, #A855F7, #F59E0B);
+  background-size: 200% 100%;
+  transition: width 0.6s cubic-bezier(.4,0,.2,1);
+  box-shadow: 0 0 12px rgba(168,85,247,0.5);
+  animation: prog-glow 2s linear infinite;
+}
+@keyframes prog-glow { 0%,100%{background-position:0% 0%} 50%{background-position:100% 0%} }
+
+.timer-wrap { position:relative; width:58px; height:58px; flex-shrink:0; }
+.timer-wrap svg { transform:rotate(-90deg); }
+circle.t-bg { fill:none; stroke:rgba(255,255,255,0.07); stroke-width:5; }
+circle.t-arc { fill:none; stroke-width:5; stroke-linecap:round; stroke-dasharray:138; transition:stroke-dashoffset 1s linear, stroke 0.3s; }
+.t-num {
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Baloo 2',cursive; font-size:1rem; font-weight:900;
+}
+
+/* ── QUESTION ── */
+.q-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 24px; padding: 26px 28px;
+  position: relative; overflow: hidden;
+}
+.q-card-top {
+  position:absolute; top:0; left:0; right:0; height:4px;
+  background: linear-gradient(90deg, #7C3AED, #A855F7, #F59E0B, #10B981, #3B82F6, #7C3AED);
+  background-size: 300% 100%;
+  animation: rainbow 4s linear infinite;
+}
+@keyframes rainbow { 0%{background-position:0%} 100%{background-position:300%} }
+
+.q-label {
+  font-size: 0.75rem; font-weight: 800; color: #C084FC;
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 14px; display:flex; align-items:center; gap: 8px;
+}
+.q-label::before {
+  content:''; width:6px; height:6px; background:#C084FC; border-radius:50%;
+  box-shadow: 0 0 8px #C084FC; animation: blink 1.5s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+.q-text {
+  font-size: clamp(0.98rem, 2.5vw, 1.12rem);
+  font-weight: 700; line-height: 1.75; color: #F8FAFC;
+}
+
+/* ── OPTIONS ── */
+.opts-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+}
+@media(max-width:520px){ .opts-grid{grid-template-columns:1fr} }
+
+.opt {
+  background: var(--card2); border: 2px solid rgba(255,255,255,0.09);
+  border-radius: 16px; padding: 14px 16px;
+  cursor: pointer; text-align: left;
+  display: flex; align-items: flex-start; gap: 12px;
+  transition: all 0.2s ease; color: #CBD5E1;
+  font-weight: 600; font-size: 0.93rem; line-height: 1.55;
+}
+.opt:hover:not(:disabled) {
+  border-color: var(--primary2); background: rgba(124,58,237,0.14);
+  transform: translateY(-2px); box-shadow: 0 6px 22px rgba(124,58,237,0.22);
+  color: #F1F5F9;
+}
+.opt-key {
+  min-width: 34px; height: 34px; border-radius: 10px;
+  background: rgba(255,255,255,0.07);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Baloo 2',cursive; font-weight: 900; font-size: 0.95rem;
+  flex-shrink: 0; transition: all 0.2s; color: var(--text2);
+}
+.opt:hover:not(:disabled) .opt-key { background: var(--primary); color:white; }
+.opt-text { flex:1; }
+
+.opt.correct {
+  border-color: var(--green) !important;
+  background: rgba(16,185,129,0.13) !important;
+  color: #A7F3D0 !important;
+  animation: popIn 0.35s ease;
+}
+.opt.correct .opt-key { background: var(--green) !important; color:white; }
+
+.opt.wrong {
+  border-color: var(--red) !important;
+  background: rgba(239,68,68,0.1) !important;
+  animation: shakeIt 0.4s ease;
+}
+.opt.wrong .opt-key { background: var(--red) !important; color:white; }
+.opt.wrong .opt-text { color: #FCA5A5 !important; text-decoration: line-through; opacity:0.65; }
+
+@keyframes popIn {
+  0%{transform:scale(1)} 45%{transform:scale(1.04)} 100%{transform:scale(1)}
+}
+@keyframes shakeIt {
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-7px)} 40%{transform:translateX(7px)}
+  60%{transform:translateX(-4px)} 80%{transform:translateX(4px)}
+}
+
+/* ── FEEDBACK ── */
+.feedback {
+  border-radius: 16px; padding: 14px 18px;
+  display: none; align-items: flex-start; gap: 12px;
+  animation: slideUp 0.3s ease;
+}
+.feedback.show { display:flex; }
+@keyframes slideUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+.feedback.fb-ok { background:rgba(16,185,129,0.1); border:1.5px solid rgba(16,185,129,0.35); }
+.feedback.fb-err { background:rgba(239,68,68,0.09); border:1.5px solid rgba(239,68,68,0.28); }
+.fb-icon { font-size: 1.5rem; flex-shrink:0; margin-top:1px; }
+.fb-body { flex:1; }
+.fb-title { font-size:0.95rem; font-weight:800; margin-bottom:4px; }
+.fb-ok .fb-title { color:#6EE7B7; }
+.fb-err .fb-title { color:#FCA5A5; }
+.fb-explain { font-size:0.83rem; color:var(--text2); line-height:1.6; font-weight:500; }
+
+.btn-next {
+  width:100%; padding:15px; border:none; border-radius:16px; color:white;
+  font-family:'Baloo 2',cursive; font-size:1.05rem; font-weight:800;
+  cursor:pointer; display:none;
+  background: linear-gradient(135deg,#7C3AED,#A855F7);
+  box-shadow: 0 6px 24px rgba(124,58,237,0.4);
+  transition: all 0.25s; letter-spacing:0.5px;
+}
+.btn-next.show { display:block; animation:slideUp 0.3s ease; }
+.btn-next:hover { transform:translateY(-2px); box-shadow:0 10px 32px rgba(124,58,237,0.6); }
+
+/* ── RESULT ── */
+.result-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 28px; padding: 40px 28px;
+  text-align: center; position: relative; overflow: hidden;
+}
+.result-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:4px;
+  background: linear-gradient(90deg, #7C3AED, #F59E0B, #10B981);
+}
+.result-trophy {
+  font-size:76px; display:block; margin-bottom:18px;
+  animation: trophyBounce 0.7s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes trophyBounce {
+  0%{transform:scale(0) rotate(-15deg);opacity:0}
+  100%{transform:scale(1) rotate(0);opacity:1}
+}
+.result-grade {
+  font-family:'Baloo 2',cursive; font-size:clamp(1.5rem,5vw,2.2rem); font-weight:900;
+  margin-bottom:10px;
+}
+.result-pts {
+  font-family:'Baloo 2',cursive; font-size:clamp(3.5rem,10vw,5rem); font-weight:900;
+  background:linear-gradient(135deg,#FCD34D,#F59E0B);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  line-height:1; margin-bottom:10px;
+}
+.result-desc {
+  font-size:0.95rem; color:var(--text2); max-width:420px;
+  margin:0 auto 28px; line-height:1.75;
+}
+.result-stats {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:24px;
+}
+.rs {
+  background:var(--card2); border:1px solid var(--border);
+  border-radius:16px; padding:16px 10px; text-align:center;
+}
+.rs-n { font-family:'Baloo 2',cursive; font-size:1.9rem; font-weight:900; display:block; }
+.rs-l { font-size:0.78rem; color:var(--text2); margin-top:3px; }
+.rs.c .rs-n{color:var(--green)} .rs.w .rs-n{color:var(--red)} .rs.t .rs-n{color:var(--gold2)}
+
+.btns-row { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:0; }
+.btn-a {
+  flex:1; min-width:140px; padding:14px 18px; border:none; border-radius:14px;
+  cursor:pointer; font-family:'Be Vietnam Pro',sans-serif; font-size:0.93rem; font-weight:700;
+  transition:all 0.25s;
+}
+.btn-a.primary {
+  background:linear-gradient(135deg,#7C3AED,#A855F7); color:white;
+  box-shadow:0 6px 24px rgba(124,58,237,0.4);
+}
+.btn-a.primary:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(124,58,237,0.6)}
+.btn-a.secondary {
+  background:var(--card2); border:1px solid var(--border); color:var(--text2);
+}
+.btn-a.secondary:hover{background:rgba(255,255,255,0.08);color:var(--text)}
+
+/* ── REVIEW ── */
+.review-section { display:none; }
+.review-section.show{display:block;animation:slideUp 0.4s ease}
+.review-head {
+  font-family:'Baloo 2',cursive; font-size:1.1rem; font-weight:800; color:var(--text2);
+  margin-bottom:14px; display:flex; align-items:center; gap:8px;
+}
+.review-item {
+  background:var(--card2); border:1px solid var(--border);
+  border-radius:14px; padding:14px 16px; margin-bottom:10px; text-align:left;
+}
+.rv-q {
+  font-size:0.88rem; font-weight:700; color:var(--text);
+  margin-bottom:10px; line-height:1.55; display:flex; align-items:flex-start; gap:8px;
+}
+.rv-num {
+  min-width:24px; height:24px; border-radius:7px;
+  background:rgba(255,255,255,0.07);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.75rem;font-weight:900;flex-shrink:0;
+  font-family:'Baloo 2',cursive; color:var(--text2);
+}
+.rv-ans {
+  font-size:0.83rem; padding:7px 12px; border-radius:10px;
+  font-weight:700; display:flex; align-items:center; gap:6px;
+}
+.rv-ans.ok{background:rgba(16,185,129,0.12);color:#6EE7B7}
+.rv-ans.no{background:rgba(239,68,68,0.1);color:#FCA5A5}
+
+/* ── STREAK TOAST ── */
+.streak-toast {
+  position:fixed; top:20px; left:50%; transform:translateX(-50%) translateY(-80px);
+  background:linear-gradient(135deg,#F59E0B,#FCD34D); color:#1a0f00;
+  padding:10px 26px; border-radius:50px;
+  font-family:'Baloo 2',cursive; font-weight:900; font-size:1rem;
+  z-index:500; box-shadow:0 8px 28px rgba(245,158,11,0.55);
+  transition:transform 0.4s cubic-bezier(.34,1.56,.64,1); white-space:nowrap;
+}
+.streak-toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ── MASCOT ── */
+.mascot-wrap {
+  position: fixed; top: 16px; right: 16px; z-index: 300;
+  display: flex; flex-direction: row-reverse; align-items: flex-start; gap: 8px;
+  pointer-events: none; user-select: none;
+}
+.mascot-bubble {
+  background: #1e2d45; border: 1.5px solid rgba(124,58,237,0.4);
+  border-radius: 4px 18px 18px 18px;
+  padding: 10px 14px; max-width: 200px;
+  font-size: 0.82rem; font-weight: 700; color: #E2E8F0;
+  line-height: 1.5; box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  transform: scale(0); transform-origin: top right;
+  transition: transform 0.35s cubic-bezier(.34,1.56,.64,1), opacity 0.3s;
+  opacity: 0; text-align: center; margin-top: 8px;
+  pointer-events: none;
+}
+.mascot-bubble.show { transform: scale(1); opacity: 1; }
+.mascot-bubble .bubble-emoji { font-size: 1.1rem; display: block; margin-bottom: 3px; }
+
+.mascot-body {
+  width: 80px; height: 80px; position: relative;
+  cursor: grab; pointer-events: all;
+  filter: drop-shadow(0 8px 20px rgba(124,58,237,0.5));
+  transition: filter 0.2s;
+}
+.mascot-body:active { cursor: grabbing; filter: drop-shadow(0 12px 28px rgba(124,58,237,0.8)); }
+.mascot-body.dragging { cursor: grabbing; }
+
+.mascot-body {
+  width: 80px; height: 80px; position: relative;
+  cursor: pointer; pointer-events: all;
+  filter: drop-shadow(0 8px 20px rgba(124,58,237,0.5));
+}
+.mascot-svg { width: 100%; height: 100%; }
+
+/* Robot body parts */
+.robot-head { animation: bob 2.5s ease-in-out infinite; }
+@keyframes bob {
+  0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)}
+}
+.robot-eye-l, .robot-eye-r {
+  animation: blink-eye 4s ease-in-out infinite;
+  transform-origin: center;
+}
+@keyframes blink-eye {
+  0%,90%,100%{transform:scaleY(1)} 95%{transform:scaleY(0.1)}
+}
+.robot-antenna { animation: wiggle-ant 3s ease-in-out infinite; transform-origin: bottom center; }
+@keyframes wiggle-ant {
+  0%,100%{transform:rotate(0deg)} 30%{transform:rotate(8deg)} 60%{transform:rotate(-8deg)}
+}
+
+/* Emotion states */
+.mascot-wrap.happy .robot-mouth-happy { display:block; }
+.mascot-wrap.happy .robot-mouth-sad { display:none; }
+.mascot-wrap.happy .robot-mouth-neutral { display:none; }
+.mascot-wrap.happy .robot-eye-l, .mascot-wrap.happy .robot-eye-r { fill: #FCD34D; }
+
+.mascot-wrap.sad .robot-mouth-happy { display:none; }
+.mascot-wrap.sad .robot-mouth-sad { display:block; }
+.mascot-wrap.sad .robot-mouth-neutral { display:none; }
+.mascot-wrap.sad .robot-eye-l, .mascot-wrap.sad .robot-eye-r { fill: #F87171; }
+
+.mascot-wrap.neutral .robot-mouth-happy { display:none; }
+.mascot-wrap.neutral .robot-mouth-sad { display:none; }
+.mascot-wrap.neutral .robot-mouth-neutral { display:block; }
+
+/* Excited bounce */
+.mascot-wrap.excited .robot-head { animation: bounce-exc 0.5s ease infinite alternate; }
+@keyframes bounce-exc { from{transform:translateY(0)} to{transform:translateY(-8px)} }
+
+/* Shake on wrong */
+.mascot-wrap.wrong-state .mascot-body { animation: shake-robot 0.5s ease; }
+@keyframes shake-robot {
+  0%,100%{transform:rotate(0)} 20%{transform:rotate(-10deg)} 40%{transform:rotate(10deg)}
+  60%{transform:rotate(-7deg)} 80%{transform:rotate(7deg)}
+}
+
+/* ── CONFETTI & PARTICLES ── */
+.confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:999}
+.cp{position:absolute;border-radius:2px;animation:cffall linear forwards}
+@keyframes cffall{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(105vh) rotate(540deg);opacity:0}}
+.px{position:fixed;pointer-events:none;z-index:200;border-radius:50%;animation:pxgo ease-out forwards}
+@keyframes pxgo{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(0)}}
+</style>
+</head>
+<body>
+
+<div class="bg-wrap">
+  <div class="grid-lines"></div>
+  <div class="scan-line"></div>
+</div>
+
+<div class="streak-toast" id="streakToast">🔥</div>
+
+<!-- MASCOT -->
+<div class="mascot-wrap neutral" id="mascot" onclick="mascotTalk()">
+  <div class="mascot-bubble" id="mascotBubble">
+    <span class="bubble-emoji" id="bubbleEmoji">🤖</span>
+    <span id="bubbleText">Chào bạn!</span>
+  </div>
+  <div class="mascot-body">
+    <svg class="mascot-svg" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+      <!-- Antenna -->
+      <g class="robot-antenna">
+        <line x1="40" y1="12" x2="40" y2="4" stroke="#A855F7" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="40" cy="3" r="3.5" fill="#FCD34D" stroke="#F59E0B" stroke-width="1.5"/>
+      </g>
+      <!-- Head group with bob -->
+      <g class="robot-head">
+        <!-- Head body -->
+        <rect x="18" y="12" width="44" height="34" rx="10" fill="#1e2d4a" stroke="#7C3AED" stroke-width="2"/>
+        <rect x="21" y="15" width="38" height="28" rx="8" fill="#0f1829"/>
+        <!-- Eyes -->
+        <circle class="robot-eye-l" cx="31" cy="29" r="6" fill="#A855F7"/>
+        <circle class="robot-eye-r" cx="49" cy="29" r="6" fill="#A855F7"/>
+        <circle cx="31" cy="29" r="3" fill="#1e2d4a"/>
+        <circle cx="49" cy="29" r="3" fill="#1e2d4a"/>
+        <circle cx="33" cy="27" r="1.5" fill="white"/>
+        <circle cx="51" cy="27" r="1.5" fill="white"/>
+        <!-- Mouths -->
+        <!-- Happy smile -->
+        <path class="robot-mouth-happy" d="M31 38 Q40 45 49 38" stroke="#6EE7B7" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <!-- Sad frown -->
+        <path class="robot-mouth-sad" d="M31 43 Q40 37 49 43" stroke="#F87171" stroke-width="2.5" fill="none" stroke-linecap="round" style="display:none"/>
+        <!-- Neutral line -->
+        <line class="robot-mouth-neutral" x1="32" y1="40" x2="48" y2="40" stroke="#94A3B8" stroke-width="2.5" stroke-linecap="round" style="display:none"/>
+        <!-- Cheeks -->
+        <circle cx="22" cy="33" r="4" fill="rgba(239,68,68,0.2)" id="cheekL"/>
+        <circle cx="58" cy="33" r="4" fill="rgba(239,68,68,0.2)" id="cheekR"/>
+        <!-- Ear bolts -->
+        <circle cx="18" cy="29" r="3" fill="#334155" stroke="#7C3AED" stroke-width="1.5"/>
+        <circle cx="62" cy="29" r="3" fill="#334155" stroke="#7C3AED" stroke-width="1.5"/>
+      </g>
+      <!-- Body -->
+      <rect x="22" y="48" width="36" height="24" rx="8" fill="#1e2d4a" stroke="#7C3AED" stroke-width="2"/>
+      <!-- Chest panel -->
+      <rect x="27" y="52" width="26" height="14" rx="5" fill="#0f1829"/>
+      <circle cx="34" cy="59" r="3" fill="#A855F7" opacity="0.8"/>
+      <circle cx="40" cy="59" r="3" fill="#FCD34D" opacity="0.8"/>
+      <circle cx="46" cy="59" r="3" fill="#10B981" opacity="0.8"/>
+      <!-- Arms -->
+      <rect x="10" y="50" width="10" height="18" rx="5" fill="#1e2d4a" stroke="#7C3AED" stroke-width="1.5"/>
+      <rect x="60" y="50" width="10" height="18" rx="5" fill="#1e2d4a" stroke="#7C3AED" stroke-width="1.5"/>
+      <!-- Legs -->
+      <rect x="26" y="72" width="10" height="7" rx="4" fill="#334155" stroke="#7C3AED" stroke-width="1.5"/>
+      <rect x="44" y="72" width="10" height="7" rx="4" fill="#334155" stroke="#7C3AED" stroke-width="1.5"/>
+    </svg>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- START -->
+  <div class="screen active" id="sStart">
+    <div class="start-hero">
+      <div class="hero-badge"><div class="dot"></div>Mini Game · Tin học 11</div>
+      <span class="hero-icon">🛡️</span>
+      <div class="hero-title">An Toàn Số</div>
+      <p class="hero-sub">Thử thách kiến thức về bảo mật và ứng xử văn minh trong môi trường số. Bạn có dám thử?</p>
+      <div class="info-pills">
+        <div class="pill">❓ <strong>10</strong> Câu hỏi</div>
+        <div class="pill">⏱️ <strong>30s</strong> Mỗi câu</div>
+        <div class="pill">⚡ <strong>+5</strong> Thưởng tốc độ</div>
+        <div class="pill">🔄 <strong>Thử lại</strong> nếu sai</div>
+      </div>
+      <button class="btn-play" onclick="startGame()">🚀 Bắt Đầu Thôi!</button>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="screen" id="sQuiz">
+    <div class="quiz-topbar">
+      <div class="progress-section">
+        <div class="prog-meta">
+          <span class="q-counter" id="qCounter">Câu 1 / 10</span>
+          <span class="score-live" id="scoreLive">⭐ 0 điểm</span>
+        </div>
+        <div class="prog-track"><div class="prog-bar" id="progBar" style="width:0%"></div></div>
+      </div>
+      <div class="timer-wrap">
+        <svg width="58" height="58" viewBox="0 0 58 58">
+          <circle class="t-bg" cx="29" cy="29" r="22"/>
+          <circle class="t-arc" id="tArc" cx="29" cy="29" r="22" stroke="#F59E0B" stroke-dashoffset="0"/>
+        </svg>
+        <div class="t-num" id="tNum" style="color:#F59E0B">30</div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-card-top"></div>
+      <div class="q-label" id="qLabel">Câu hỏi 1</div>
+      <div class="q-text" id="qText"></div>
+    </div>
+
+    <div class="opts-grid" id="optsGrid"></div>
+
+    <div class="feedback" id="feedback">
+      <span class="fb-icon" id="fbIcon"></span>
+      <div class="fb-body">
+        <div class="fb-title" id="fbTitle"></div>
+        <div class="fb-explain" id="fbExplain"></div>
+      </div>
+    </div>
+
+    <button class="btn-next" id="btnNext" onclick="nextQ()">Câu tiếp theo &nbsp;→</button>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="sResult">
+    <div class="result-card">
+      <span class="result-trophy" id="rTrophy">🏆</span>
+      <div class="result-grade" id="rGrade"></div>
+      <div class="result-pts" id="rPts"></div>
+      <div class="result-desc" id="rDesc"></div>
+      <div class="result-stats">
+        <div class="rs c"><span class="rs-n" id="rOk">0</span><div class="rs-l">✅ Đúng ngay</div></div>
+        <div class="rs w"><span class="rs-n" id="rWrong">0</span><div class="rs-l">❌ Sai</div></div>
+        <div class="rs t"><span class="rs-n" id="rTime">0s</span><div class="rs-l">⏱ Thời gian</div></div>
+      </div>
+      <div class="btns-row">
+        <button class="btn-a primary" onclick="startGame()">🔄 Chơi Lại</button>
+        <button class="btn-a secondary" id="btnReview" onclick="toggleReview()">📋 Xem Đáp Án</button>
+      </div>
+    </div>
+
+    <div class="review-section" id="reviewSection">
+      <div class="review-head">📋 Bảng Đáp Án Chi Tiết</div>
+      <div id="reviewList"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="confetti-wrap" id="confettiWrap"></div>
+
+<script>
+const QS = [
+  {q:"Khi đăng nhập tài khoản cá nhân trên máy tính công cộng, việc nên làm là:",opts:["Để chế độ tự động đăng nhập","Để chế độ ghi nhớ mật khẩu","Không cần thoát tài khoản sau khi dùng","Không ghi nhớ mật khẩu và đăng xuất sau khi dùng"],ans:3,ex:"Luôn đăng xuất và không lưu mật khẩu trên máy tính công cộng để bảo vệ tài khoản của bạn!"},
+  {q:"Nhận cuộc gọi từ người tự xưng nhân viên y tế, yêu cầu nộp 50 triệu tiền viện phí gấp. Em nên:",opts:["Chuyển tiền ngay","Bình tĩnh gọi trực tiếp cho người thân để xác minh","Hỏi số tài khoản rồi chuyển","Vay tiền họ hàng chuyển ngay"],ans:1,ex:"Hãy chậm lại! Luôn xác minh thông tin trực tiếp với người thân trước khi làm bất cứ điều gì."},
+  {q:"Lời khuyên nào SAI khi muốn bảo vệ máy tính và thông tin cá nhân?",opts:["Luôn đăng xuất khi dùng xong","Không mở tệp đính kèm từ người lạ","Chẳng cần làm gì vì nhà sản xuất đã bảo vệ sẵn","Cài phần mềm diệt virus và cập nhật thường xuyên"],ans:2,ex:"Không có thiết bị nào an toàn tuyệt đối! Hãy chủ động cài phần mềm bảo mật và cập nhật thường xuyên."},
+  {q:"Điều nào có thể dẫn đến vi phạm pháp luật khi dùng Internet?",opts:["Bắt nạt hoặc tiếp tay cho kẻ bắt nạt","Lan truyền tin giả, bài xuyên tạc sự thật","Ăn cắp thông tin trên mạng (vi phạm bản quyền)","Tất cả các ý trên"],ans:3,ex:"Tất cả các hành vi trên đều vi phạm pháp luật và đạo đức khi sử dụng Internet!"},
+  {q:"Hành động nào ĐÚNG khi tham gia mạng xã hội?",opts:["Chấp nhận mọi lời mời kết bạn từ người lạ","Báo cho bố mẹ/thầy cô khi bị đe dọa qua mạng","Chia sẻ video bạo lực cho bạn bè","Đăng thông tin sai về bạn cùng lớp lên mạng"],ans:1,ex:"Khi bị đe dọa qua mạng, hãy báo ngay cho người lớn tin tưởng để được hỗ trợ kịp thời!"},
+  {q:"Nhận email từ địa chỉ lạ có đính kèm tệp tin, em nên:",opts:["Mở tệp ngay để xem nội dung","Chuyển tiếp cho bạn bè","Không mở, xóa email và báo cáo thư rác","Trả lời hỏi người gửi là ai"],ans:2,ex:"Tệp đính kèm từ địa chỉ lạ có thể chứa virus hoặc phần mềm độc hại. Xóa và báo cáo ngay!"},
+  {q:"Hành vi nào vi phạm quyền riêng tư của người khác trên mạng?",opts:["Chia sẻ bài viết công khai của bạn","Đăng ảnh người khác lên mạng khi chưa xin phép","Nhắn tin riêng hỏi thăm bạn bè","Like bài viết của người khác"],ans:1,ex:"Đăng ảnh người khác khi chưa được đồng ý là xâm phạm quyền riêng tư và có thể bị xử lý pháp lý!"},
+  {q:"Mật khẩu nào AN TOÀN nhất cho tài khoản cá nhân?",opts:["123456","Ngày sinh của bản thân (01012005)","Tên của bản thân (nguyenvana)","Kết hợp chữ hoa, thường, số, ký tự đặc biệt (Abc@2025!)"],ans:3,ex:"Mật khẩu mạnh cần ít nhất 8 ký tự kết hợp 4 loại: chữ hoa, chữ thường, số và ký tự đặc biệt!"},
+  {q:"Thấy bài đăng có nội dung sai sự thật về người nổi tiếng, em nên:",opts:["Chia sẻ ngay để nhiều người biết","Bình luận chửi bới người đăng","Không chia sẻ và báo cáo nội dung vi phạm","Tải về gửi bạn bè qua tin nhắn riêng"],ans:2,ex:"Không lan truyền tin giả! Báo cáo nội dung vi phạm để nền tảng xử lý. Đó là hành động có trách nhiệm."},
+  {q:"Điều nào bảo vệ thông tin cá nhân tốt nhất khi dùng mạng xã hội?",opts:["Dùng cùng 1 mật khẩu cho tất cả tài khoản","Chia sẻ mật khẩu cho bạn thân quản lý hộ","Bật xác thực hai bước và không chia sẻ thông tin đăng nhập","Đăng địa chỉ nhà và số điện thoại lên trang cá nhân"],ans:2,ex:"Xác thực hai bước (2FA) là lớp bảo vệ quan trọng nhất. Kết hợp với mật khẩu mạnh sẽ rất hiệu quả!"}
+];
+
+const LBLS=['A','B','C','D'];
+let cur=0,score=0,correctFirst=0,wrongFirst=0;
+let timeLeft=30,timerID=null,answered=false,firstTry=true;
+let tStart=0,userAnswers=[],streak=0;
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  // Show mascot greeting on start
+  if(id==='sStart') {
+    setTimeout(()=>setMascot('excited','start'),600);
+  }
+}
+
+// Show mascot on page load
+window.addEventListener('load', ()=>{
+  setTimeout(()=>setMascot('excited','start'), 800);
+});
+
+// ── MASCOT DRAG ──
+(function(){
+  const wrap = document.getElementById('mascot');
+  const body = wrap.querySelector('.mascot-body');
+  let dragging = false, ox = 0, oy = 0;
+
+  // Init position: top-right
+  let px = window.innerWidth - 100;
+  let py = 16;
+  wrap.style.right = 'auto';
+  wrap.style.top = py + 'px';
+  wrap.style.left = px + 'px';
+
+  function setPos(x, y) {
+    // Clamp within viewport
+    x = Math.max(0, Math.min(window.innerWidth - 90, x));
+    y = Math.max(0, Math.min(window.innerHeight - 90, y));
+    px = x; py = y;
+    wrap.style.left = x + 'px';
+    wrap.style.top  = y + 'px';
+    // Flip bubble side based on position
+    const bubble = document.getElementById('mascotBubble');
+    if (x > window.innerWidth / 2) {
+      wrap.style.flexDirection = 'row-reverse';
+      bubble.style.borderRadius = '4px 18px 18px 18px';
+      bubble.style.transformOrigin = 'top right';
+    } else {
+      wrap.style.flexDirection = 'row';
+      bubble.style.borderRadius = '18px 4px 18px 18px';
+      bubble.style.transformOrigin = 'top left';
+    }
+  }
+
+  body.addEventListener('mousedown', e => {
+    dragging = true;
+    ox = e.clientX - px;
+    oy = e.clientY - py;
+    body.classList.add('dragging');
+    e.preventDefault();
+  });
+
+  body.addEventListener('touchstart', e => {
+    dragging = true;
+    const t = e.touches[0];
+    ox = t.clientX - px;
+    oy = t.clientY - py;
+    body.classList.add('dragging');
+    e.preventDefault();
+  }, {passive: false});
+
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    setPos(e.clientX - ox, e.clientY - oy);
+  });
+
+  document.addEventListener('touchmove', e => {
+    if (!dragging) return;
+    const t = e.touches[0];
+    setPos(t.clientX - ox, t.clientY - oy);
+    e.preventDefault();
+  }, {passive: false});
+
+  document.addEventListener('mouseup', () => {
+    if (!dragging) return;
+    dragging = false;
+    body.classList.remove('dragging');
+  });
+
+  document.addEventListener('touchend', () => {
+    dragging = false;
+    body.classList.remove('dragging');
+  });
+
+  window.addEventListener('resize', () => setPos(px, py));
+  setPos(px, py);
+})();
+
+// ── MASCOT ──
+const MASCOT_MSGS = {
+  start: [
+    {e:'🤖', t:'Xin chào! Mình là BYTE — trợ lý an toàn số của bạn! 🛡️'},
+    {e:'😎', t:'Sẵn sàng chinh phục 10 câu hỏi chưa nào? 🚀'},
+    {e:'💪', t:'Nhớ đọc kỹ từng câu nhé! Mình tin bạn! ✨'},
+  ],
+  thinking: [
+    {e:'🤔', t:'Hmm... câu này hay đấy, suy nghĩ kỹ nhé!'},
+    {e:'👀', t:'Đừng vội! Đọc kỹ tất cả đáp án trước đã...'},
+    {e:'🧐', t:'Tập trung nào! Bạn làm được mà!'},
+    {e:'⏰', t:'Còn thời gian đó, bình tĩnh thôi!'},
+    {e:'🤖', t:'Dùng kiến thức trong bài để suy luận nhé!'},
+  ],
+  correct: [
+    {e:'🎉', t:'XUẤT SẮC! Bạn đỉnh thật sự! 🌟'},
+    {e:'🔥', t:'Chính xác! Bạn là thiên tài an toàn số!'},
+    {e:'💯', t:'Hoàn hảo! Tiếp tục phát huy nhé!'},
+    {e:'⚡', t:'Nhanh và đúng! Tuyệt vời luôn!'},
+    {e:'🏆', t:'Không thể sai được! Quá giỏi!'},
+    {e:'✨', t:'Kiến thức của bạn thật vững vàng!'},
+  ],
+  wrong: [
+    {e:'😅', t:'Ôi chưa đúng rồi! Thử đáp án khác nhé!'},
+    {e:'🤔', t:'Hmm, suy nghĩ lại đi bạn ơi!'},
+    {e:'💪', t:'Đừng nản! Chọn lại nào, bạn làm được!'},
+    {e:'😬', t:'Gần đúng rồi đó! Thử tiếp nhé!'},
+    {e:'🙈', t:'Ơ không đúng rồi! Còn đáp án khác kìa!'},
+  ],
+  timeout: [
+    {e:'😱', t:'Ôi hết giờ rồi! Lần sau nhanh hơn nhé!'},
+    {e:'⏰', t:'Thời gian bay nhanh quá ha! Cố lên!'},
+    {e:'😤', t:'Tiếc quá! Câu sau phải nhanh hơn đó!'},
+  ],
+  streak: [
+    {e:'🔥', t:'WOW! Chuỗi đúng liên tiếp! Bạn đang on fire!'},
+    {e:'🚀', t:'Không thể ngăn cản bạn rồi! Tiếp tục đi!'},
+    {e:'⚡', t:'Siêu nhân an toàn số đây rồi!'},
+  ],
+  result_perfect: [
+    {e:'🏆', t:'HOÀN HẢO! Bạn là BYTE số 1 trong lòng mình! 💜'},
+  ],
+  result_good: [
+    {e:'🥇', t:'Rất tốt! Bạn nắm vững kiến thức rồi đó!'},
+  ],
+  result_ok: [
+    {e:'🥈', t:'Khá đó! Ôn thêm rồi thử lại nhé bạn!'},
+  ],
+  result_bad: [
+    {e:'📚', t:'Đừng nản! Đọc lại bài và thử lại nào! Mình tin bạn!'},
+  ],
+  idle: [
+    {e:'😄', t:'Ấn vào mình nếu cần động lực nhé!'},
+    {e:'🤖', t:'Tên mình là BYTE! Chuyên gia bảo mật đây!'},
+    {e:'💡', t:'Mẹo nhỏ: Đọc kỹ từng đáp án trước khi chọn!'},
+    {e:'🛡️', t:'An toàn số là trách nhiệm của mỗi người!'},
+  ]
+};
+
+let mascotTimer = null;
+let lastMascotType = 'neutral';
+
+function setMascot(type, msgKey, forceMsg) {
+  const wrap = document.getElementById('mascot');
+  const bubble = document.getElementById('mascotBubble');
+
+  // Remove all state classes
+  wrap.classList.remove('happy','sad','neutral','excited','wrong-state');
+  if(type==='happy'||type==='excited') wrap.classList.add('happy');
+  else if(type==='sad') wrap.classList.add('sad');
+  else if(type==='wrong-state') { wrap.classList.add('sad','wrong-state'); setTimeout(()=>wrap.classList.remove('wrong-state'),600); }
+  else wrap.classList.add('neutral');
+
+  if(type==='excited') wrap.classList.add('excited');
+
+  // Pick message
+  const pool = MASCOT_MSGS[msgKey] || MASCOT_MSGS.idle;
+  const msg = forceMsg || pool[Math.floor(Math.random()*pool.length)];
+  document.getElementById('bubbleEmoji').textContent = msg.e;
+  document.getElementById('bubbleText').textContent = msg.t;
+
+  // Show bubble
+  clearTimeout(mascotTimer);
+  bubble.classList.add('show');
+  mascotTimer = setTimeout(()=> bubble.classList.remove('show'), 3500);
+  lastMascotType = msgKey;
+}
+
+function mascotTalk() {
+  // On click, show a random idle message
+  const pool = MASCOT_MSGS.idle;
+  const msg = pool[Math.floor(Math.random()*pool.length)];
+  document.getElementById('bubbleEmoji').textContent = msg.e;
+  document.getElementById('bubbleText').textContent = msg.t;
+  const bubble = document.getElementById('mascotBubble');
+  clearTimeout(mascotTimer);
+  bubble.classList.add('show');
+  mascotTimer = setTimeout(()=> bubble.classList.remove('show'), 3000);
+}
+
+// Periodic idle messages during quiz
+let idleInterval = null;
+function startMascotIdle() {
+  clearInterval(idleInterval);
+  idleInterval = setInterval(()=>{
+    const bubble = document.getElementById('mascotBubble');
+    if(!bubble.classList.contains('show')) {
+      const pool = MASCOT_MSGS.thinking;
+      const msg = pool[Math.floor(Math.random()*pool.length)];
+      document.getElementById('bubbleEmoji').textContent = msg.e;
+      document.getElementById('bubbleText').textContent = msg.t;
+      bubble.classList.add('show');
+      setTimeout(()=>bubble.classList.remove('show'), 3000);
+    }
+  }, 8000);
+}
+function stopMascotIdle() { clearInterval(idleInterval); }
+
+function startGame(){
+  cur=0;score=0;correctFirst=0;wrongFirst=0;streak=0;
+  tStart=Date.now();userAnswers=[];
+  document.getElementById('reviewSection').classList.remove('show');
+  document.getElementById('btnReview').textContent='📋 Xem Đáp Án';
+  showScreen('sQuiz');
+  setMascot('excited','start');
+  startMascotIdle();
+  loadQ();
+}
+
+function loadQ(){
+  answered=false;firstTry=true;
+  const q=QS[cur];
+  document.getElementById('qCounter').textContent=`Câu ${cur+1} / ${QS.length}`;
+  document.getElementById('scoreLive').textContent=`⭐ ${score} điểm`;
+  document.getElementById('progBar').style.width=`${cur/QS.length*100}%`;
+  document.getElementById('qLabel').textContent=`Câu hỏi ${cur+1}`;
+  document.getElementById('qText').textContent=q.q;
+
+  const grid=document.getElementById('optsGrid');
+  grid.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const btn=document.createElement('button');
+    btn.className='opt';
+    btn.innerHTML=`<span class="opt-key">${LBLS[i]}</span><span class="opt-text">${o}</span>`;
+    btn.onclick=()=>pick(i,btn);
+    grid.appendChild(btn);
+  });
+
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('btnNext').className='btn-next';
+  startTimer();
+}
+
+function startTimer(){
+  clearInterval(timerID);
+  timeLeft=30;updateTimer(30);
+  timerID=setInterval(()=>{
+    timeLeft--;updateTimer(timeLeft);
+    if(timeLeft<=0){clearInterval(timerID);onTimeout();}
+  },1000);
+}
+
+function updateTimer(t){
+  const arc=document.getElementById('tArc'),num=document.getElementById('tNum');
+  arc.style.strokeDashoffset=138*(1-t/30);
+  const col=t>15?'#F59E0B':t>8?'#F97316':'#EF4444';
+  arc.style.stroke=col;num.style.color=col;num.textContent=t;
+}
+
+function pick(idx,btn){
+  if(answered)return;
+  const q=QS[cur];
+  const btns=document.querySelectorAll('.opt');
+
+  if(idx===q.ans){
+    answered=true;
+    clearInterval(timerID);
+    stopMascotIdle();
+    btns.forEach(b=>b.disabled=true);
+    btn.classList.add('correct');
+
+    if(firstTry){
+      correctFirst++;
+      const bonus=Math.round(timeLeft/30*5);
+      const pts=10+bonus;
+      score+=pts;streak++;
+      userAnswers.push({ok:true,chosen:idx});
+      if(streak>=3){
+        showStreak(streak);
+        setMascot('excited','streak');
+      } else {
+        setMascot('excited','correct');
+      }
+      showFeedback(true,`🎉 Chính xác! +${pts} điểm`,q.ex);
+      spawnParticles(btn);
+    } else {
+      userAnswers[cur]={ok:false,chosen:idx};
+      setMascot('happy','correct');
+      showFeedback(true,'✅ Đúng rồi!',q.ex);
+    }
+
+    document.getElementById('scoreLive').textContent=`⭐ ${score} điểm`;
+    document.getElementById('btnNext').className='btn-next show';
+
+  } else {
+    btn.classList.add('wrong');
+    btn.disabled=true;
+    if(firstTry){
+      wrongFirst++;firstTry=false;streak=0;
+      userAnswers.push({ok:false,chosen:idx});
+    }
+    setMascot('wrong-state','wrong');
+    showFeedback(false,'❌ Chưa đúng!','Hãy thử lại — chọn đáp án khác nhé!');
+  }
+}
+
+function onTimeout(){
+  if(answered)return;
+  answered=true;
+  stopMascotIdle();
+  if(firstTry){wrongFirst++;streak=0;userAnswers.push({ok:false,chosen:-1});}
+  const q=QS[cur];
+  const btns=document.querySelectorAll('.opt');
+  btns.forEach(b=>b.disabled=true);
+  btns[q.ans].classList.add('correct');
+  setMascot('sad','timeout');
+  showFeedback(false,'⏰ Hết giờ!',`Đáp án đúng là ${LBLS[q.ans]}. ${q.ex}`);
+  document.getElementById('btnNext').className='btn-next show';
+}
+
+function showFeedback(ok,title,explain){
+  const fb=document.getElementById('feedback');
+  fb.className=`feedback show ${ok?'fb-ok':'fb-err'}`;
+  document.getElementById('fbIcon').textContent=ok?'✅':'❌';
+  document.getElementById('fbTitle').textContent=title;
+  document.getElementById('fbExplain').textContent=explain;
+}
+
+function nextQ(){
+  cur++;
+  if(cur>=QS.length)showResult();
+  else loadQ();
+}
+
+function showResult(){
+  clearInterval(timerID);
+  stopMascotIdle();
+  const elapsed=Math.round((Date.now()-tStart)/1000);
+  showScreen('sResult');
+
+  const pct=correctFirst/QS.length;
+  let trophy,grade,desc,color,mascotKey;
+  if(pct===1){trophy='🏆';grade='XUẤT SẮC – HOÀN HẢO!';desc='Tuyệt vời! Em trả lời đúng ngay tất cả 10 câu. Em là chuyên gia An Toàn Số thực sự! 🌟';color='linear-gradient(135deg,#FCD34D,#F59E0B)';launchConfetti();mascotKey='result_perfect';}
+  else if(pct>=0.8){trophy='🥇';grade='RẤT XUẤT SẮC!';desc='Kiến thức về an toàn số của em rất tốt! Tiếp tục phát huy nhé. 💪';color='linear-gradient(135deg,#FCD34D,#F59E0B)';launchConfetti();mascotKey='result_good';}
+  else if(pct>=0.6){trophy='🥈';grade='KHÁ TỐT!';desc='Em đã nắm được phần lớn kiến thức. Ôn lại những câu sai để hoàn thiện hơn nhé!';color='linear-gradient(135deg,#60A5FA,#3B82F6)';mascotKey='result_ok';}
+  else if(pct>=0.4){trophy='🥉';grade='CẦN CỐ GẮNG THÊM!';desc='Kiến thức về an toàn số rất quan trọng. Hãy ôn lại và thử lại nhé!';color='linear-gradient(135deg,#FB923C,#F97316)';mascotKey='result_bad';}
+  else{trophy='📚';grade='HÃY ÔN TẬP LẠI!';desc='Đừng nản lòng! Đọc kỹ bài học và thử sức lần nữa. Mỗi lần sai là một lần học được. 💡';color='linear-gradient(135deg,#EF4444,#DC2626)';mascotKey='result_bad';}
+
+  setTimeout(()=>setMascot(pct>=0.6?'excited':'sad', mascotKey), 500);
+
+  document.getElementById('rTrophy').textContent=trophy;
+  const gEl=document.getElementById('rGrade');
+  gEl.textContent=grade;
+  gEl.style.background=color;
+  gEl.style.webkitBackgroundClip='text';gEl.style.webkitTextFillColor='transparent';gEl.style.backgroundClip='text';
+  document.getElementById('rPts').textContent=`${score} điểm`;
+  document.getElementById('rDesc').textContent=desc;
+  document.getElementById('rOk').textContent=correctFirst;
+  document.getElementById('rWrong').textContent=wrongFirst;
+  document.getElementById('rTime').textContent=`${elapsed}s`;
+
+  const list=document.getElementById('reviewList');
+  list.innerHTML='';
+  QS.forEach((q,i)=>{
+    const ua=userAnswers[i];
+    const ok=ua&&ua.ok;
+    const div=document.createElement('div');
+    div.className='review-item';
+    div.innerHTML=`
+      <div class="rv-q"><span class="rv-num">${i+1}</span><span>${q.q}</span></div>
+      <div class="rv-ans ${ok?'ok':'no'}">${ok?'✅':'❌'} Đáp án đúng: <strong>${LBLS[q.ans]}. ${q.opts[q.ans]}</strong></div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function toggleReview(){
+  const s=document.getElementById('reviewSection');
+  const btn=document.getElementById('btnReview');
+  if(s.classList.contains('show')){
+    s.classList.remove('show');btn.textContent='📋 Xem Đáp Án';
+  } else {
+    s.classList.add('show');btn.textContent='🔼 Ẩn Đáp Án';
+    setTimeout(()=>s.scrollIntoView({behavior:'smooth',block:'start'}),100);
+  }
+}
+
+function showStreak(n){
+  const t=document.getElementById('streakToast');
+  t.textContent=`🔥 ${n} câu đúng liên tiếp!`;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2400);
+}
+
+function spawnParticles(btn){
+  const r=btn.getBoundingClientRect();
+  const cx=r.left+r.width/2,cy=r.top+r.height/2;
+  const cols=['#FCD34D','#10B981','#A855F7','#3B82F6','#F87171','#fff'];
+  for(let i=0;i<16;i++){
+    const p=document.createElement('div');
+    p.className='px';
+    const angle=(i/16)*360;
+    const d=55+Math.random()*65;
+    p.style.cssText=`left:${cx}px;top:${cy}px;width:8px;height:8px;background:${cols[i%cols.length]};--dx:${Math.cos(angle*Math.PI/180)*d}px;--dy:${Math.sin(angle*Math.PI/180)*d}px;animation-duration:${0.5+Math.random()*0.4}s;`;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),900);
+  }
+}
+
+function launchConfetti(){
+  const w=document.getElementById('confettiWrap');w.innerHTML='';
+  const cols=['#FCD34D','#F59E0B','#A855F7','#10B981','#3B82F6','#F87171','#fff'];
+  for(let i=0;i<100;i++){
+    const p=document.createElement('div');p.className='cp';
+    const sz=6+Math.random()*10;
+    p.style.cssText=`left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};width:${sz}px;height:${sz}px;border-radius:${Math.random()>.5?'50%':'3px'};animation:cffall ${2+Math.random()*2}s ${Math.random()*0.5}s linear forwards;`;
+    w.appendChild(p);setTimeout(()=>p.remove(),4500);
+  }
+}
+</script>
+</body>
+</html>
